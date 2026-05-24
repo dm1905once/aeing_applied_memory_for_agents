@@ -1,44 +1,61 @@
 import click
 import chromadb
 import uuid
+import os
+import dotenv
 from openai import OpenAI
 from tinydb import TinyDB, Query
-import os
 from typing import List
-
 
 class StructuredStore:
     """TODO: implement with TinyDB"""
     def __init__(self):
-        pass
+        self.db = TinyDB('memory.json')
+        self.table = self.db.table('memories')
     
     def store(self, content: dict):
-        pass
+        self.db.table('memories').insert(content)
     
     def query(self, key: str, value: str, n_results: int = 5) -> List[dict]:
-        pass
-    
+        User = Query()
+        results = self.table.search(User[key] == value)
+        return results[:n_results]
+
     def flush(self):
-        pass
+        self.db.table('memories').truncate()
 
 
 class VectorStore:
     """TODO: implement with ChromaDB"""
     def __init__(self):
+        dotenv.load_dotenv()
         self.vectorizer = OpenAI(
             api_key=os.getenv("OPENAI_API_KEY"),
             base_url=os.getenv("OPENAI_BASE_URL")
         )
-        pass
+        self.client = chromadb.PersistentClient(path="./chroma_db")
+        self.collection = self.client.get_or_create_collection(
+            name="memories",
+            metadata={"hnsw:space": "cosine"}
+        )
     
     def store(self, content: str):
-        pass
+        self.collection.add(
+            str(uuid.uuid4()),
+            documents=content,
+            embeddings=self._embed(content)
+        )
     
     def query(self, query: str, n_results: int = 5) -> List[str]:
-        pass
+        results = self.collection.query(
+            # query_texts=query,
+            query_embeddings=self._embed(query),
+            n_results=n_results
+        )
+        return results['documents'][0]
     
     def flush(self):
-        pass
+        self.client.delete_collection(name="memories")
     
     def _embed(self, text: str) -> List[float]:
         """Supporting funciton to generate embeddings"""

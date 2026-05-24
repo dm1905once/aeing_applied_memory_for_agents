@@ -4,11 +4,23 @@ files:
     visible: true
     learner_created: false
   - name: test/__init__.py
+    visible: true
     learner_created: false
   - name: test/tests.py
+    visible: true
     learner_created: false
   - name: tests.py
+    visible: true
     learner_created: false
+  - name: memory_storages/memory.json
+    visible: true
+    learner_created: true
+  - name: memory.json
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/projects/554/stages/3175/implement#comment
-status: Unchecked
+status: Failed
+feedback:
+  message: Incorrect
+  time: "Sun, 24 May 2026 23:38:42 UTC"
 record: -1
