@@ -1,4 +1,4 @@
-from test.tests import ConversationManagerTests
+from test.tests import MemoryStoreTests
 
 if __name__ == '__main__':
-    ConversationManagerTests().run_tests()
+    MemoryStoreTests().run_tests()
