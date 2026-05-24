@@ -1,0 +1,22 @@
+type: hyperskill
+title: Applied Memory for Agents
+language: English
+summary: "<p data-end=\"1009\" data-is-last-node=\"\" data-is-only-node=\"\" data-start=\"\
+  567\">AI assistants become far more useful when they can <em data-end=\"628\" data-start=\"\
+  618\">remember</em> things and act on them. In this project, you will build your\
+  \ own personal AI task assistant that maintains conversation context, stores information\
+  \ across sessions, and uses tools to create, search, and update tasks. Instead of\
+  \ just answering questions, your assistant will recall user details, track progress,\
+  \ and help manage daily to-dos — just like a real productivity companion.</p><br/><br/>Learn\
+  \ more at <a href=\"https://hyperskill.org/projects/554?utm_source=ide&utm_medium=ide&utm_campaign=ide&utm_content=project-card\"\
+  >https://hyperskill.org/projects/554</a>"
+programming_language: Python
+programming_language_version: 3.10
+environment: unittest
+content:
+  - Applied Memory for Agents
+additional_files:
+  - name: requirements.txt
+    visible: true
+mode: Study
+yaml_version: 5

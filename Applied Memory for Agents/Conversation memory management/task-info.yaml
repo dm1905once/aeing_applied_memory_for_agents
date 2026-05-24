@@ -1,0 +1,17 @@
+type: edu
+files:
+  - name: memory_types/step1.py
+    visible: true
+    learner_created: false
+  - name: test/__init__.py
+    learner_created: false
+  - name: test/tests.py
+    learner_created: false
+  - name: tests.py
+    learner_created: false
+feedback_link: https://hyperskill.org/projects/554/stages/3174/implement#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sun, 24 May 2026 18:58:59 UTC"
+record: -1

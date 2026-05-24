@@ -1,0 +1,41 @@
+hyperskill_project:
+  id: 554
+  ide_files: https://hyperskill.org/api/projects/554/additional-files/additional_files.json
+  is_template_based: true
+  use_ide: true
+  environment: unittest
+update_date: "Thu, 01 Jan 1970 00:00:00 UTC"
+stages:
+  - id: 3174
+    step: 53204
+    is_completed: true
+  - id: 3175
+    step: 53205
+    is_completed: false
+  - id: 3176
+    step: 53206
+    is_completed: false
+topics:
+  0:
+    - title: What is an LLM agent?
+      theory_id: 53092
+    - title: "How agents work (Thought, Act, Observe)"
+      theory_id: 53101
+    - title: Thought part of an agent loop
+      theory_id: 53106
+    - title: Act part of an agent loop
+      theory_id: 53113
+    - title: Observe part of an agent loop
+      theory_id: 53118
+    - title: Understanding LLM context
+      theory_id: 53162
+    - title: Memory in agents
+      theory_id: 53163
+  1:
+    - title: Agent long-term memory
+      theory_id: 53164
+    - title: Storing and retrieving memories for an agent
+      theory_id: 53165
+  2:
+    - title: Updating and decaying memories for an agent
+      theory_id: 53166
