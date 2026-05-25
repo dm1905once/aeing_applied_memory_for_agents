@@ -64,8 +64,10 @@ class TasksStore:
         
     def create_task(self, name: str, status: str) -> str:
         """
-        TODO: implement task creation
-        
+        Purpose: Create a new task and add it to the database
+        Parameters:
+            name (str): Task name
+            status (str): Task status
         Returns:
             str: Task creation message
         """
@@ -74,18 +76,12 @@ class TasksStore:
         
     def find_task(self, key: str, value: str, match: MatchType = MatchType.EQ) -> list[dict]:
         """
-        TODO: implement task search by field value or by field value pattern.
-        
-        Tip 1: use tinydb search functionality. 
-        Also, use regex for pattern matching (MatchType.Contains).
-
-        Tip 2: remember to select match by value, not by name.
-        i.e.
-        -> match == MatchType.EQ is not correct
-        -> match == MatchType.EQ.value is correct
-        
+        Purpose: Search a task by field value or by field value pattern.
+        Parameters:
+            key (str): Task field name
+            value (str): Task field value
         Returns:
-            str: Task search result
+            list[dict]: List of matching tasks
         """
         tasks = []
         Task = Query()
@@ -100,12 +96,10 @@ class TasksStore:
         
     def update_task_status(self, name: str, new_status: str) -> str:
         """
-        TODO: implement task status update
-
-        Tip: use self.db.update(...) with 2 params: field and query.
-        Field - field to update
-        Query - ability to select portion of data to update
-        
+        Purpose: update task status
+        Parameters:
+            name (str): Task name
+            new_status (str): Task new status
         Returns:
             str: Task status update message
         """
@@ -115,7 +109,7 @@ class TasksStore:
   
     def flush(self):
         """
-        TODO: clear database 
+        Purpose: Clear the database
         """
         self.db.truncate()
     
@@ -131,14 +125,63 @@ class PersonalAssistant:
             {
                 "type": "function",
                 "name": "find_task",
+                "description": "Search for tasks by field value or field value pattern.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "key": {
+                            "type": "string",
+                            "description": "Field name to search for.",
+                        },
+                        "value": {
+                            "type": "string",
+                            "description": "Field value to search for.",
+                        },
+                        "match": {
+                            "type": MatchType,
+                            "description": "Enum to qualify the type of comparison when searching",
+                        }
+                    },
+                    "required": ["name", "status"]
+                }
             },
             {
                 "type": "function",
                 "name": "create_task",
+                "description": "Add new task to database",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Task name",
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Task status",
+                        }
+                    },
+                    "required": ["name", "status"]
+                }
             },
             {
                 "type": "function",
                 "name": "update_task_status",
+                "description": "Update the status of an existing task",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Existing task name",
+                        },
+                        "new_status": {
+                            "type": "string",
+                            "description": "New task status",
+                        }
+                    },
+                    "required": ["name", "new_status"]
+                }
             }
         ]
         # to store data
@@ -176,19 +219,20 @@ class PersonalAssistant:
                 tool_result = self.tool_map[item.name](
                     **eval(item.arguments)
                 )
-                """
-                TODO: Fill parameters of messages.append to make it work. messages.append requires tool result in special format. Check openai responses docs for more info
-                """
-                messages.append(
-                    
-                )
+                # Filled parameters of messages.append to make it work
+                messages.append({
+                    "type": "function_call_output",
+                    "call_id": item.call_id,
+                    "output": str(tool_result)
+                })
         """
         TODO: Change return value to make it work
         
         Something seems wrong here. 
         If we return the context messages right away, something will break. What can we do here, to continue the loop?
         """
-        return messages
+        self._call_llm(messages)
+        return []
     
     def flush(self):
         self.tasks_store.flush()
