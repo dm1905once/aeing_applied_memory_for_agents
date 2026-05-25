@@ -1,4 +1,4 @@
-from test.tests import MemoryStoreTests
+from test.tests import PersonalAssistantTests
 
 if __name__ == '__main__':
-    MemoryStoreTests().run_tests()
+    PersonalAssistantTests().run_tests()
