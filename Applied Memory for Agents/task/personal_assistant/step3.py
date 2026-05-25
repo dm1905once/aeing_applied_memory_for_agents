@@ -1,7 +1,7 @@
 from openai import OpenAI
 import os
 import dotenv
-from tinydb import TinyDB, Query
+from tinydb import TinyDB, Query, where
 from enum import Enum
 
 dotenv.load_dotenv()
@@ -69,9 +69,10 @@ class TasksStore:
         Returns:
             str: Task creation message
         """
-        pass
+        task = self.db.insert({"name": name, "status": status})
+        return f"Task {task}: created successfully"
         
-    def find_task(self, key: str, value: str, match: MatchType = MatchType.EQ) -> str:
+    def find_task(self, key: str, value: str, match: MatchType = MatchType.EQ) -> list[dict]:
         """
         TODO: implement task search by field value or by field value pattern.
         
@@ -86,7 +87,16 @@ class TasksStore:
         Returns:
             str: Task search result
         """
-        pass
+        tasks = []
+        Task = Query()
+        if match == MatchType.EQ.value:
+            # tasks = self.db.search(where(Task.key) == value)
+            # tasks = self.db.search(Task.key == value)
+            tasks = self.db.search(Query()[key] == value)
+        if match == MatchType.CONTAINS.value:
+            # tasks = self.db.search(Task.name.matches(key))
+            tasks = self.db.search(Query()[key].matches(value))
+        return tasks
         
     def update_task_status(self, name: str, new_status: str) -> str:
         """
@@ -99,13 +109,15 @@ class TasksStore:
         Returns:
             str: Task status update message
         """
-        pass
+        Task = Query()
+        task = self.db.update({"status": new_status}, Task.name == name)
+        return f"Task {task}: status updated successfully"
   
     def flush(self):
         """
         TODO: clear database 
         """
-        pass
+        self.db.truncate()
     
     
 class PersonalAssistant:
