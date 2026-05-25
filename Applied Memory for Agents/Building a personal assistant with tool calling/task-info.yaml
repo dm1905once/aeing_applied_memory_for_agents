@@ -9,6 +9,15 @@ files:
     learner_created: false
   - name: tests.py
     learner_created: false
+  - name: tasks.json
+    visible: true
+    learner_created: true
+  - name: personal_assistant/tasks.json
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/projects/554/stages/3176/implement#comment
-status: Unchecked
+status: Failed
+feedback:
+  message: "Exception in test #1"
+  time: "Mon, 25 May 2026 19:24:50 UTC"
 record: -1

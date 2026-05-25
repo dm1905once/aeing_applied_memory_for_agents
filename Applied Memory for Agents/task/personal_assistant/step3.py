@@ -27,6 +27,7 @@ class ContextManager:
         """Function for showing context for easier solving of optional tasks"""
         msgs = []
         for elem in self.messages:
+            # print(elem)
             if type(elem) is dict:
                 if 'role' in elem:
                     msgs.append(elem['role'] + ': ' + elem['content'][:15] + '...')
@@ -42,13 +43,23 @@ class ContextManager:
     def compact(self):
         """
         OPTIONAL TASK
-        
-        If you use get_repr() function after each call to LLM, 
-        you will see that context is getting bigger and bigger. Not only with messages, but also with function calls and their outputs. 
-        
-        Your task is to implement compact() function to remove all non-message items from context.
+        Removes all non-message elements from the context
         """
-        pass
+        msgs = []
+        for elem in self.messages:
+            if type(elem) is dict:
+                save_element = {}
+                if 'role' in elem:
+                    save_element['role'] = elem['role']
+                    save_element['content'] = elem['content']
+                else:
+                    if elem['type'] == 'function_call_output':
+                        save_element = elem
+                    else:
+                        save_element['type'] = elem['type']
+                        save_element['output'] = elem['output']
+                msgs.append(save_element)
+        self.messages = msgs
     
     def reset(self):
         self.messages = []
@@ -62,7 +73,7 @@ class TasksStore:
     def __init__(self):
         self.db = TinyDB('tasks.json')
         
-    def create_task(self, name: str, status: str) -> str:
+    def create_task(self, name: str, status: str = "pending") -> str:
         """
         Purpose: Create a new task and add it to the database
         Parameters:
@@ -84,13 +95,9 @@ class TasksStore:
             list[dict]: List of matching tasks
         """
         tasks = []
-        Task = Query()
         if match == MatchType.EQ.value:
-            # tasks = self.db.search(where(Task.key) == value)
-            # tasks = self.db.search(Task.key == value)
             tasks = self.db.search(Query()[key] == value)
         if match == MatchType.CONTAINS.value:
-            # tasks = self.db.search(Task.name.matches(key))
             tasks = self.db.search(Query()[key].matches(value))
         return tasks
         
@@ -116,11 +123,7 @@ class TasksStore:
     
 class PersonalAssistant:
     def __init__(self):
-        """
-        TODO: fill tools list with correct tool descriptions. Match tool names to function names. And tool parameters to function parameters.
-        
-        As a hint, check how tool_result is obtained during tool call phase.
-        """
+
         self.tools = [
             {
                 "type": "function",
@@ -138,7 +141,8 @@ class PersonalAssistant:
                             "description": "Field value to search for.",
                         },
                         "match": {
-                            "type": MatchType,
+                            "type": "string",
+                            "enum": [member.value for member in MatchType],
                             "description": "Enum to qualify the type of comparison when searching",
                         }
                     },
@@ -200,6 +204,7 @@ class PersonalAssistant:
         context = self.context_manager.get_context()
         context = self._call_llm(context)
         self.context_manager.update_messages(context)
+        self.context_manager.compact()
         return context[-1].content[0].text
     
     def _call_llm(self, messages: list[dict]) -> list[dict]:
@@ -225,14 +230,14 @@ class PersonalAssistant:
                     "call_id": item.call_id,
                     "output": str(tool_result)
                 })
-        """
-        TODO: Change return value to make it work
-        
-        Something seems wrong here. 
-        If we return the context messages right away, something will break. What can we do here, to continue the loop?
-        """
-        self._call_llm(messages)
-        return []
+                response = CLIENT.responses.create(
+                    model="gpt-4o-mini",
+                    input=messages
+                )
+                messages += response.output
+        return messages
+
+
     
     def flush(self):
         self.tasks_store.flush()
