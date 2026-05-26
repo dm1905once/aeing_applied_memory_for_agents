@@ -85,7 +85,7 @@ class TasksStore:
         task = self.db.insert({"name": name, "status": status})
         return f"Task {task}: created successfully"
         
-    def find_task(self, key: str, value: str, match: MatchType = MatchType.EQ) -> list[dict]:
+    def find_task(self, key: str, value: str, match: MatchType = MatchType.EQ) -> str:
         """
         Purpose: Search a task by field value or by field value pattern.
         Parameters:
@@ -99,7 +99,7 @@ class TasksStore:
             tasks = self.db.search(Query()[key] == value)
         if match == MatchType.CONTAINS.value:
             tasks = self.db.search(Query()[key].matches(value))
-        return tasks
+        return str(tasks)
         
     def update_task_status(self, name: str, new_status: str) -> str:
         """
@@ -146,7 +146,7 @@ class PersonalAssistant:
                             "description": "Enum to qualify the type of comparison when searching",
                         }
                     },
-                    "required": ["name", "status"]
+                    "required": ["key", "value"]
                 }
             },
             {
@@ -204,7 +204,7 @@ class PersonalAssistant:
         context = self.context_manager.get_context()
         context = self._call_llm(context)
         self.context_manager.update_messages(context)
-        self.context_manager.compact()
+        #self.context_manager.compact()
         return context[-1].content[0].text
     
     def _call_llm(self, messages: list[dict]) -> list[dict]:
@@ -228,17 +228,17 @@ class PersonalAssistant:
                 messages.append({
                     "type": "function_call_output",
                     "call_id": item.call_id,
-                    "output": str(tool_result)
+                    "output": tool_result
                 })
-                response = CLIENT.responses.create(
-                    model="gpt-4o-mini",
-                    input=messages
-                )
-                messages += response.output
+        response = CLIENT.responses.create(
+            model="gpt-4o-mini",
+            input=messages,
+            tools=self.tools
+        )
+        messages += response.output
         return messages
 
 
-    
     def flush(self):
         self.tasks_store.flush()
         self.context_manager.reset()

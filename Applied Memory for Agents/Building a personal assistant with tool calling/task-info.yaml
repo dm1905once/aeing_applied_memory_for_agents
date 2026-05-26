@@ -12,12 +12,10 @@ files:
   - name: tasks.json
     visible: true
     learner_created: true
-  - name: personal_assistant/tasks.json
-    visible: true
-    learner_created: true
 feedback_link: https://hyperskill.org/projects/554/stages/3176/implement#comment
-status: Failed
+status: Solved
 feedback:
-  message: "Exception in test #1"
-  time: "Mon, 25 May 2026 19:24:50 UTC"
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">Hyperskill</a>
+    to continue learning.
+  time: "Tue, 26 May 2026 01:05:17 UTC"
 record: -1
